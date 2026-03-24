@@ -91,7 +91,7 @@ struct HomeView: View {
                         ProfileView()
                     }
 
-                    AppTabBar(selectedTab: $selectedTab)
+                    FooterBar(selectedTab: $selectedTab)
                 }
                 .ignoresSafeArea(edges: .bottom)
 
@@ -205,6 +205,7 @@ struct HomeView: View {
                     if let index = routines.firstIndex(where: { $0.id == selectedRoutine.id }) {
                         routines[index] = updatedRoutine
                     }
+                    routineToStartFullScreen = nil
                 }
             }
         }
@@ -279,46 +280,4 @@ struct RoutineCard: View {
     }
 }
 
-struct AppTabBar: View {
-    @Binding var selectedTab: Int
-
-    var body: some View {
-        HStack(spacing: 0) {
-            TabBarItem(icon: "DumbellIcon", label: "Routine", isSelected: selectedTab == 0)
-                .onTapGesture { selectedTab = 0 }
-
-            TabBarItem(icon: "PersonIcon", label: "Profile", isSelected: selectedTab == 1)
-                .onTapGesture { selectedTab = 1 }
-        }
-        .frame(maxWidth: .infinity)
-        .frame(height: 70)
-        .background(Color(hex: "#353535"))
-        .padding(.bottom, 20)
-    }
-}
-
-struct TabBarItem: View {
-    let icon: String
-    let label: String
-    let isSelected: Bool
-
-    private var itemColor: Color {
-        Color.white.opacity(isSelected ? 1.0 : 0.5)
-    }
-
-    var body: some View {
-        VStack(spacing: 4) {
-            Image(icon)
-                .renderingMode(.template)
-                .resizable()
-                .scaledToFit()
-                .frame(width: 24, height: 24)
-                .foregroundColor(itemColor)
-
-            Text(label)
-                .font(.custom("Inter", size: 11))
-                .foregroundColor(itemColor)
-        }
-        .frame(maxWidth: .infinity)
-    }
-}
+ 

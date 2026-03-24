@@ -9,6 +9,7 @@ enum RoutineHeaderMode {
     case create
     case edit
     case workout(title: String)
+    case saveWorkout
 }
 
 struct RoutineHeader: View {
@@ -26,6 +27,12 @@ struct RoutineHeader: View {
                         .foregroundColor(Color(hex: "#5F97F6"))
                         .font(.system(size: 18, weight: .semibold))
                 }
+            } else if case .saveWorkout = mode {
+                Text("Resume")
+                    .foregroundColor(Color(hex: "#5F97F6"))
+                    .font(.custom("Inter", size: 16))
+                    .fontWeight(.regular)
+                    .onTapGesture(perform: onLeadingTap)
             } else {
                 Text("Cancel")
                     .foregroundColor(Color(hex: "#5F97F6"))
@@ -66,6 +73,7 @@ struct RoutineHeader: View {
         case .create: return "Create Routine"
         case .edit: return "Edit Routine"
         case .workout(let title): return title
+        case .saveWorkout: return "Save Workout"
         }
     }
     
@@ -74,6 +82,7 @@ struct RoutineHeader: View {
         case .create: return "Save"
         case .edit: return "Update"
         case .workout: return "Finish"
+        case .saveWorkout: return "Save"
         }
     }
 }

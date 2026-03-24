@@ -11,6 +11,9 @@ struct StartRoutineView: View {
     @State var routine: Routine
     var onFinish: (Routine) -> Void
     
+    // Internal routing state
+    @State private var showSaveWorkout: Bool = false
+    
     // Timer state
     @State private var timeElapsed: Int = 0
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
@@ -21,8 +24,7 @@ struct StartRoutineView: View {
                 mode: .workout(title: "Active routine"),
                 onLeadingTap: { dismiss() },
                 onTrailingTap: {
-                    onFinish(routine)
-                    dismiss()
+                    showSaveWorkout = true
                 }
             )
             
@@ -63,7 +65,14 @@ struct StartRoutineView: View {
         .navigationBarHidden(true)
         .navigationBarBackButtonHidden(true)
         .onReceive(timer) { _ in
-            timeElapsed += 1
+            if !showSaveWorkout {
+                timeElapsed += 1
+            }
+        }
+        .navigationDestination(isPresented: $showSaveWorkout) {
+            SaveWorkoutView(routine: routine, durationElapsed: timeElapsed, onSave: { completedRoutine in
+                onFinish(completedRoutine)
+            })
         }
     }
     
