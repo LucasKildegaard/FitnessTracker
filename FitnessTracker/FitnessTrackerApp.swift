@@ -4,6 +4,7 @@ import FirebaseCore
 @main
 struct FitnessTrackerApp: App {
     @State private var authVM = AuthViewModel()
+    @State private var workoutManager = WorkoutManager()
 
     init() {
         FirebaseApp.configure()
@@ -13,6 +14,7 @@ struct FitnessTrackerApp: App {
         WindowGroup {
             ContentView()
                 .environment(authVM)
+                .environment(workoutManager)
         }
     }
 }

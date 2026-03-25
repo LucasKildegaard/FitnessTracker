@@ -14,22 +14,48 @@ struct WeeklyStat {
 
 struct ProgressView: View {
     @Environment(AuthViewModel.self) var authVM
+    @Environment(WorkoutManager.self) var workoutManager
     @State private var selectedWeekIndex: Int = 11
     
-    let stats: [WeeklyStat] = [
-        WeeklyStat(duration: "4 h 15 m", routines: "2", sets: "12", score: 2),
-        WeeklyStat(duration: "5 h 30 m", routines: "3", sets: "18", score: 3),
-        WeeklyStat(duration: "3 h 45 m", routines: "2", sets: "15", score: 2),
-        WeeklyStat(duration: "6 h 10 m", routines: "4", sets: "24", score: 4),
-        WeeklyStat(duration: "4 h 50 m", routines: "3", sets: "20", score: 3),
-        WeeklyStat(duration: "7 h 0 m", routines: "4", sets: "28", score: 4),
-        WeeklyStat(duration: "5 h 20 m", routines: "3", sets: "22", score: 3),
-        WeeklyStat(duration: "4 h 40 m", routines: "2", sets: "16", score: 2),
-        WeeklyStat(duration: "8 h 15 m", routines: "5", sets: "32", score: 5),
-        WeeklyStat(duration: "6 h 30 m", routines: "4", sets: "26", score: 4),
-        WeeklyStat(duration: "16 h 8 m", routines: "13", sets: "55", score: 13),
-        WeeklyStat(duration: "8 h 2 m", routines: "4", sets: "25", score: 4)
-    ]
+    private var stats: [WeeklyStat] {
+        let calendar = Calendar.current
+        let now = Date()
+        // Determine the start of the current week based on locale rules
+        guard let currentWeekStart = calendar.date(from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: now)) else { return [] }
+        
+        var result: [WeeklyStat] = []
+        for i in 0..<12 {
+            let weeksAgo = 11 - i
+            guard let weekStart = calendar.date(byAdding: .weekOfYear, value: -weeksAgo, to: currentWeekStart),
+                  let weekEnd = calendar.date(byAdding: .day, value: 7, to: weekStart) else { continue }
+            
+            let weekSessions = workoutManager.sessions.filter { $0.date >= weekStart && $0.date < weekEnd }
+            let totalDuration = weekSessions.reduce(0) { $0 + $1.duration }
+            let totalSets = weekSessions.reduce(0) { $0 + $1.completedSets }
+            let routinesCount = weekSessions.count
+            
+            result.append(WeeklyStat(
+                duration: timeString(from: totalDuration),
+                routines: "\(routinesCount)",
+                sets: "\(totalSets)",
+                score: Double(routinesCount)
+            ))
+        }
+        
+        // Safety fallback array if date calculus inexplicably fails
+        if result.count != 12 {
+            return Array(repeating: WeeklyStat(duration: "0 m", routines: "0", sets: "0", score: 0), count: 12)
+        }
+        
+        return result
+    }
+    
+    private func timeString(from totalSeconds: Int) -> String {
+        let hours = totalSeconds / 3600
+        let minutes = (totalSeconds % 3600) / 60
+        if hours > 0 { return "\(hours) h \(minutes) m" }
+        return "\(minutes) m"
+    }
     
     private func weekTitle(for index: Int) -> String {
         if index == 11 {

@@ -6,17 +6,12 @@
 import SwiftUI
 
 struct ActivitiesView: View {
-    // Dummy Data
-    let activities: [WorkoutSession] = [
-        WorkoutSession(routineName: "Push-day", duration: 482, date: Date()),
-        WorkoutSession(routineName: "Pull-day", duration: 3600, date: Date().addingTimeInterval(-86400)),
-        WorkoutSession(routineName: "Leg-day", duration: 2700, date: Date().addingTimeInterval(-172800))
-    ]
+    @Environment(WorkoutManager.self) var workoutManager
     
     var body: some View {
         ScrollView {
             VStack(spacing: 0) {
-                ForEach(activities) { activity in
+                ForEach(workoutManager.sessions.sorted(by: { $0.date > $1.date })) { activity in
                     ActivityRow(activity: activity)
                     Divider().padding(.horizontal, 16)
                 }

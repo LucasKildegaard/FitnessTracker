@@ -8,8 +8,15 @@ internal import Combine
 
 struct StartRoutineView: View {
     @Environment(\.dismiss) var dismiss
+    let originalRoutine: Routine
     @State var routine: Routine
     var onFinish: (Routine) -> Void
+    
+    init(routine: Routine, onFinish: @escaping (Routine) -> Void) {
+        self.originalRoutine = routine
+        self._routine = State(initialValue: routine)
+        self.onFinish = onFinish
+    }
     
     // Internal routing state
     @State private var showSaveWorkout: Bool = false
@@ -70,9 +77,14 @@ struct StartRoutineView: View {
             }
         }
         .navigationDestination(isPresented: $showSaveWorkout) {
-            SaveWorkoutView(routine: routine, durationElapsed: timeElapsed, onSave: { completedRoutine in
-                onFinish(completedRoutine)
-            })
+            SaveWorkoutView(
+                originalRoutine: originalRoutine,
+                routine: routine,
+                durationElapsed: timeElapsed,
+                onSave: { completedRoutine in
+                    onFinish(completedRoutine)
+                }
+            )
         }
     }
     
