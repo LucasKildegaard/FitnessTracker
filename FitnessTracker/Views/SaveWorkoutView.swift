@@ -130,14 +130,11 @@ struct SaveWorkoutView: View {
     private func timeString(from totalSeconds: Int) -> String {
         let hours = totalSeconds / 3600
         let minutes = (totalSeconds % 3600) / 60
-        let seconds = (totalSeconds % 3600) % 60
         
         if hours > 0 {
-            return "\(hours) h \(minutes) min \(seconds) s"
-        } else if minutes > 0 {
-            return "\(minutes) min \(seconds) s"
+            return "\(hours) h \(minutes) m"
         } else {
-            return "\(seconds) s"
+            return "\(minutes) m"
         }
     }
     

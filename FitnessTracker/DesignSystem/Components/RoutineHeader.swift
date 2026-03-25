@@ -10,6 +10,7 @@ enum RoutineHeaderMode {
     case edit
     case workout(title: String)
     case saveWorkout
+    case profile
 }
 
 struct RoutineHeader: View {
@@ -33,6 +34,13 @@ struct RoutineHeader: View {
                     .font(.custom("Inter", size: 16))
                     .fontWeight(.regular)
                     .onTapGesture(perform: onLeadingTap)
+            } else if case .profile = mode {
+                Image("PersonIcon")
+                    .renderingMode(.template)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 32, height: 32)
+                    .foregroundColor(Color(hex: "#5F97F6"))
             } else {
                 Text("Cancel")
                     .foregroundColor(Color(hex: "#5F97F6"))
@@ -51,21 +59,27 @@ struct RoutineHeader: View {
             
             Spacer()
             
-            // Trailing
-            PrimaryButton(
-                title: trailingText,
-                backgroundColor: Color(hex: "#5F97F6"),
-                foregroundColor: .white,
-                isFullWidth: false,
-                action: onTrailingTap
-            )
-            .disabled(trailingDisabled)
-            .opacity(trailingDisabled ? 0.5 : 1)
+            if case .profile = mode {
+                // No trailing button for profile mode
+                // We use a spacer or empty view to maintain title centering if needed, 
+                // but since the title is also in the center of the HStack with Spacers, it works.
+                Color.clear.frame(width: 32, height: 32) // placeholder to match leading icon width
+            } else {
+                PrimaryButton(
+                    title: trailingText,
+                    backgroundColor: Color(hex: "#5F97F6"),
+                    foregroundColor: .white,
+                    isFullWidth: false,
+                    action: onTrailingTap
+                )
+                .disabled(trailingDisabled)
+                .opacity(trailingDisabled ? 0.5 : 1)
+            }
         }
         .padding(.horizontal, 16)
         .padding(.top, 10)
         .padding(.bottom, 10)
-        .background(Color(hex: "#252525").ignoresSafeArea(edges: .top))
+        .background(Color(hex: "#353535").ignoresSafeArea(edges: .top))
     }
     
     private var titleText: String {
@@ -74,6 +88,7 @@ struct RoutineHeader: View {
         case .edit: return "Edit Routine"
         case .workout(let title): return title
         case .saveWorkout: return "Save Workout"
+        case .profile: return "You"
         }
     }
     
@@ -83,6 +98,7 @@ struct RoutineHeader: View {
         case .edit: return "Update"
         case .workout: return "Finish"
         case .saveWorkout: return "Save"
+        case .profile: return ""
         }
     }
 }

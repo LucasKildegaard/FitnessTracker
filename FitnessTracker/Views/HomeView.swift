@@ -88,7 +88,7 @@ struct HomeView: View {
                         }
                         .background(Color.white)
                     } else {
-                        ProfileView()
+                        ProfileContainerView()
                     }
 
                     FooterBar(selectedTab: $selectedTab)
